@@ -1,0 +1,22 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Seleccionado (azul claro) -->
+    <item android:state_selected="true">
+        <shape android:shape="oval">
+            <solid android:color="#90CAF9"/>
+        </shape>
+    </item>
+
+    <!-- Hoy (azul fuerte) -->
+    <item android:state_activated="true">
+        <shape android:shape="oval">
+            <solid android:color="#1976D2"/>
+        </shape>
+    </item>
+
+    <!-- Normal -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@android:color/transparent"/>
+        </shape>
+    </item>
+</selector>

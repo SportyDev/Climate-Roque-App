@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Colores para el calendario -->
+    <color name="today_blue">#1976D2</color>         <!-- Azul fuerte para el día de hoy -->
+    <color name="selected_blue">#64B5F6</color>      <!-- Azul claro para día seleccionado -->
+    <color name="disabled_gray">#F5F5F5</color>      <!-- Gris claro para días no seleccionables -->
+    <color name="disabled_text_gray">#BDBDBD</color> <!-- Gris para texto de días deshabilitados -->
+
+    <color name="primary">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="accent">#FF4081</color>
+</resources>
