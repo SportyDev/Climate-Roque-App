@@ -1,9 +1,11 @@
 package com.sportydev.appclimaroque
+
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
@@ -15,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnPrevMonth: ImageButton
     private lateinit var btnNextMonth: ImageButton
     private lateinit var btnOpenDatePicker: ImageButton
+    private var btnToday: TextView? = null // Cambiar a TextView
     private lateinit var recyclerDays: RecyclerView
     private lateinit var daysAdapter: DaysAdapter
 
@@ -39,6 +42,12 @@ class MainActivity : AppCompatActivity() {
         btnNextMonth = findViewById(R.id.btnNextMonth)
         btnOpenDatePicker = findViewById(R.id.btnOpenDatePicker)
         recyclerDays = findViewById(R.id.recyclerDays)
+
+        // Inicializar btnToday solo si existe en el layout
+        val todayButton = findViewById<TextView?>(R.id.btnToday)
+        if (todayButton != null) {
+            btnToday = todayButton
+        }
     }
 
     private fun setupRecyclerView() {
@@ -72,6 +81,10 @@ class MainActivity : AppCompatActivity() {
         btnOpenDatePicker.setOnClickListener {
             showDatePicker()
         }
+
+        btnToday?.setOnClickListener {
+            goToToday()
+        }
     }
 
     private fun updateCalendar() {
@@ -86,6 +99,9 @@ class MainActivity : AppCompatActivity() {
 
         // Hacer scroll al día de hoy si estamos en el mes actual
         scrollToTodayIfCurrentMonth()
+
+        // Actualizar el estado del botón HOY
+        updateTodayButtonState()
     }
 
     private fun generateDaysForMonth(): List<Day> {
@@ -187,5 +203,40 @@ class MainActivity : AppCompatActivity() {
         datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
 
         datePickerDialog.show()
+    }
+
+    private fun goToToday() {
+        val today = Calendar.getInstance()
+
+        // Establecer el calendario actual al mes de hoy
+        currentCalendar.set(Calendar.YEAR, today.get(Calendar.YEAR))
+        currentCalendar.set(Calendar.MONTH, today.get(Calendar.MONTH))
+
+        // Establecer el día seleccionado como hoy
+        selectedCalendar.set(Calendar.YEAR, today.get(Calendar.YEAR))
+        selectedCalendar.set(Calendar.MONTH, today.get(Calendar.MONTH))
+        selectedCalendar.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH))
+
+        updateCalendar()
+    }
+
+    private fun updateTodayButtonState() {
+        btnToday?.let { button ->
+            val today = Calendar.getInstance()
+            val isCurrentMonth = currentCalendar.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                    currentCalendar.get(Calendar.MONTH) == today.get(Calendar.MONTH)
+            val isTodaySelected = selectedCalendar.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                    selectedCalendar.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
+                    selectedCalendar.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)
+
+            // Si estamos en el mes actual y hoy está seleccionado, el botón se ve diferente
+            if (isCurrentMonth && isTodaySelected) {
+                button.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+                button.setBackgroundColor(ContextCompat.getColor(this, R.color.today_blue))
+            } else {
+                button.setTextColor(ContextCompat.getColor(this, R.color.today_blue))
+                button.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent))
+            }
+        }
     }
 }

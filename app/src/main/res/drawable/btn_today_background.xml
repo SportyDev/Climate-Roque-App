@@ -64,21 +64,19 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <TextView
+            <Button
                 android:id="@+id/btnToday"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:text="HOY"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#1976D2"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center"
+                android:textColor="@color/today_blue"
+                android:background="?attr/selectableItemBackground"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
                 android:layout_marginEnd="8dp"
-                android:clickable="true"
-                android:focusable="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
