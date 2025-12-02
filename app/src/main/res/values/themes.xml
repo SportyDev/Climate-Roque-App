@@ -1,9 +1,24 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- Base application theme -->
     <style name="Base.Theme.AppClimaRoque" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Colores principales -->
+        <item name="colorPrimary">#1976D2</item>
+        <item name="colorPrimaryVariant">#64B5F6</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+
+        <!-- Puedes añadir más si quieres coherencia -->
+        <item name="colorSecondary">#64B5F6</item>
+        <item name="colorOnSecondary">#000000</item>
+        <item name="android:colorBackground">#FFFFFF</item>
     </style>
 
     <style name="Theme.AppClimaRoque" parent="Base.Theme.AppClimaRoque" />
+
+    <!-- Estilo para tu BottomSheet -->
+    <style name="FullScreenBottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="behavior_peekHeight">0dp</item>
+        <item name="behavior_hideable">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
 </resources>

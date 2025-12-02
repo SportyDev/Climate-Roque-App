@@ -1,7 +1,9 @@
 package com.sportydev.appclimaroque
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     private var btnToday: TextView? = null // Cambiar a TextView
     private lateinit var recyclerDays: RecyclerView
     private lateinit var daysAdapter: DaysAdapter
+    private lateinit var btnOpen: Button
+    private lateinit var btnMothy: ImageButton
 
     private var currentCalendar = Calendar.getInstance()
     private var selectedCalendar = Calendar.getInstance() // Nuevo: para rastrear el día seleccionado
@@ -42,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         btnNextMonth = findViewById(R.id.btnNextMonth)
         btnOpenDatePicker = findViewById(R.id.btnOpenDatePicker)
         recyclerDays = findViewById(R.id.recyclerDays)
+        btnOpen = findViewById(R.id.btnOpenBottomSheet)
+        btnMothy = findViewById(R.id.btnReportMonth)
 
         // Inicializar btnToday solo si existe en el layout
         val todayButton = findViewById<TextView?>(R.id.btnToday)
@@ -72,6 +78,10 @@ class MainActivity : AppCompatActivity() {
             currentCalendar.add(Calendar.MONTH, -1)
             updateCalendar()
         }
+        btnMothy.setOnClickListener {
+            val intent = Intent(this, ActivityMonthlyReports::class.java)
+            startActivity(intent)
+        }
 
         btnNextMonth.setOnClickListener {
             currentCalendar.add(Calendar.MONTH, 1)
@@ -84,6 +94,10 @@ class MainActivity : AppCompatActivity() {
 
         btnToday?.setOnClickListener {
             goToToday()
+        }
+        btnOpen.setOnClickListener {
+            val intent = Intent(this, RegistroClimaActivity::class.java)
+            startActivity(intent)
         }
     }
 
