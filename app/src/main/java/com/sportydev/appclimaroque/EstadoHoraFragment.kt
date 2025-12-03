@@ -44,6 +44,8 @@ class EstadoHoraFragment : Fragment() {
     private lateinit var etVisibilidad: EditText
     private lateinit var etFenomenos: EditText
 
+    private var datosCargados = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -76,6 +78,16 @@ class EstadoHoraFragment : Fragment() {
         // Visibilidad y Fenómenos
         etVisibilidad = view.findViewById(R.id.etVisibilidadHora)
         etFenomenos = view.findViewById(R.id.etFenomenosHora)
+    }
+
+    // Agrega esto en TemperaturasFragment.kt
+    override fun onResume() {
+        super.onResume()
+        // Buscar si la actividad tiene un registro para editar
+        val activity = requireActivity() as? RegistroClimaActivity
+        activity?.registroEdicion?.let { datos ->
+            cargarDatos(datos) // Llamamos a la función que creamos en el Paso 1
+        }
     }
 
     // Ayuda a convertir texto a Double sin errores
@@ -117,5 +129,39 @@ class EstadoHoraFragment : Fragment() {
             visibilidad = etVisibilidad.text.toString().toDoubleOrNullSafe(),
             fenomenos = etFenomenos.text.toString()
         )
+    }
+    // Agrega esto dentro de EstadoHoraFragment
+
+    fun cargarDatos(registro: RegistroClimatico) {
+        // 2. VALIDACIÓN PARA NO SOBRESCRIBIR
+        if (datosCargados) return
+
+        // Cargar Cielo
+        val cielo = registro.estadoTiempoObs ?: ""
+        cbDespejado.isChecked = cielo.contains("Despejado")
+        cbMedioNublado.isChecked = cielo.contains("Medio Nublado")
+        cbNublado.isChecked = cielo.contains("Nublado")
+
+        // Cargar Temperatura
+        val temp = registro.estadoTemperaturaObs ?: ""
+        cbFrio.isChecked = temp.contains("Frío")
+        cbFresco.isChecked = temp.contains("Fresco")
+        cbTemplado.isChecked = temp.contains("Templado")
+        cbCaluroso.isChecked = temp.contains("Caluroso")
+
+        // Cargar Viento
+        if (registro.vientoDireccionObs == "CALMA") {
+            cbCalma.isChecked = true
+            etDireccionViento.setText("")
+        } else {
+            cbCalma.isChecked = false
+            etDireccionViento.setText(registro.vientoDireccionObs ?: "")
+        }
+
+        etVisibilidad.setText(registro.visibilidadPorcentajeObs?.toString() ?: "")
+        etFenomenos.setText(registro.fenomenosDiversos1hr ?: "")
+
+        // 3. BLOQUEAR FUTURAS CARGAS
+        datosCargados = true
     }
 }

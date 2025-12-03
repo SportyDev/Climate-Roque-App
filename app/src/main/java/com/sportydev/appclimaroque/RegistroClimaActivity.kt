@@ -1,6 +1,5 @@
 package com.sportydev.appclimaroque
 
-// Asegúrate de tener estos imports
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -28,20 +27,46 @@ class RegistroClimaActivity : AppCompatActivity() {
     private lateinit var dbHelper: AdminBdClima
     private lateinit var fechaActualParaBD: String
 
+    // VARIABLE NUEVA: Almacena el registro si estamos editando
+    var registroEdicion: RegistroClimatico? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registro_clima)
 
         dbHelper = AdminBdClima(this)
 
-        // Configuración de fecha
-        val fecha = Date()
-        fechaActualParaBD = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(fecha)
-        val formatoDisplay = SimpleDateFormat("dd-MMMM 'DEL' yyyy", Locale("es", "ES"))
-        val fechaDisplay = formatoDisplay.format(fecha).uppercase()
+        // --- MANEJO DE FECHAS ---
+        val fechaRecibida = intent.getStringExtra("EXTRA_FECHA")
+        val dbFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val displayFormat = SimpleDateFormat("dd-MMMM 'DEL' yyyy", Locale("es", "ES"))
 
-        initViews()
-        tvFechaObservacion.text = "HOJA DIARIA DE OBSERVACIONES... DÍA $fechaDisplay"
+        if (fechaRecibida != null) {
+            fechaActualParaBD = fechaRecibida
+            try {
+                val dateObj = dbFormat.parse(fechaRecibida)
+                val fechaDisplay = displayFormat.format(dateObj!!).uppercase()
+                initViews()
+                tvFechaObservacion.text = "HOJA DIARIA DE OBSERVACIONES... DÍA $fechaDisplay"
+            } catch (e: Exception) {
+                initViews()
+                tvFechaObservacion.text = "HOJA DIARIA... $fechaRecibida"
+            }
+        } else {
+            val hoy = Date()
+            fechaActualParaBD = dbFormat.format(hoy)
+            val fechaDisplay = displayFormat.format(hoy).uppercase()
+            initViews()
+            tvFechaObservacion.text = "HOJA DIARIA DE OBSERVACIONES... DÍA $fechaDisplay"
+        }
+
+        // --- BUSCAR DATOS EXISTENTES ---
+        registroEdicion = dbHelper.getRegistroByFecha(fechaActualParaBD)
+
+        if (registroEdicion != null) {
+            submitButton.text = "ACTUALIZAR REGISTRO"
+            Toast.makeText(this, "Cargando datos existentes...", Toast.LENGTH_SHORT).show()
+        }
 
         setupViewPager()
         setupTabLayout()
@@ -59,7 +84,7 @@ class RegistroClimaActivity : AppCompatActivity() {
     private fun setupViewPager() {
         val adapter = ClimateFormPagerAdapter(this)
         viewPager.adapter = adapter
-        // Importante: Mantiene los fragments en memoria para no perder datos al cambiar de tab
+        // Mantiene los 3 fragments vivos para poder cargarles datos sin que se borren
         viewPager.offscreenPageLimit = 3
     }
 
@@ -78,103 +103,87 @@ class RegistroClimaActivity : AppCompatActivity() {
         submitButton.setOnClickListener { collectAndSaveFormData() }
     }
 
-    // =========================================================================
-    //  AQUÍ ESTÁ LA CORRECCIÓN PRINCIPAL
-    // =========================================================================
     private fun collectAndSaveFormData() {
         val adapter = viewPager.adapter as? ClimateFormPagerAdapter
         if (adapter == null) return
 
-        // --- 1. Datos Fragment 1 (Temperaturas) ---
+        // 1. Obtener datos de fragments
         val tempFragment = adapter.getTemperaturasFragment()
-        val dataFrag1 = tempFragment?.collectData()
-
-        if (dataFrag1 == null) {
-            Toast.makeText(this, "Faltan datos en Temperaturas", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // --- 2. Datos Fragment 2 (Estado Hora) ---
         val estadoFragment = adapter.getEstadoHoraFragment()
-        val dataFrag2 = estadoFragment?.collectData()
-
-        if (dataFrag2 == null) {
-            Toast.makeText(this, "Faltan datos en Estado Actual", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // --- 3. Datos Fragment 3 (Estado 24h) ---
         val estado24hFragment = adapter.getEstado24HFragment()
+
+        val dataFrag1 = tempFragment?.collectData()
+        val dataFrag2 = estadoFragment?.collectData()
         val dataFrag3 = estado24hFragment?.collectData()
 
-        if (dataFrag3 == null) {
-            Toast.makeText(this, "Faltan datos en Estado 24H", Toast.LENGTH_SHORT).show()
+        if (dataFrag1 == null || dataFrag2 == null || dataFrag3 == null) {
+            Toast.makeText(this, "Faltan datos en algun formulario", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // --- 4. Crear objeto RegistroClimatico ---
-        // Aquí hacemos el "mapeo" correcto de nombres
-        val registroCompleto = RegistroClimatico(
+        // 2. Crear objeto (Usando ID existente si es edición)
+        val nuevoRegistro = RegistroClimatico(
+            id = registroEdicion?.id ?: 0,
             fecha = fechaActualParaBD,
 
-            // DATOS FRAG 1 (Nombres coinciden con TemperaturaData)
+            // Frag 1
             tempAmbiente = dataFrag1.tempAmbiente,
             tempMax = dataFrag1.tempMax,
             tempMin = dataFrag1.tempMin,
-            precipitacionMm = dataFrag1.precipCantidad, // dataFrag1.precipCantidad -> BD.precipitacionMm
+            precipitacionMm = dataFrag1.precipCantidad,
             evapLecturaMicrometro = dataFrag1.evapLectura,
             evapMm = dataFrag1.evapMm,
             evap24hr = dataFrag1.evap24h,
             helada = dataFrag1.helada,
 
-            // DATOS FRAG 2 (CORREGIDOS los errores de referencia)
+            // Frag 2
             estadoTiempoObs = dataFrag2.estadoTiempoObs,
             estadoTemperaturaObs = dataFrag2.estadoTemperaturaObs,
-
-            // CORRECCIÓN: En el fragment se llama 'vientoDireccion', en la BD 'vientoDireccionObs'
             vientoDireccionObs = dataFrag2.vientoDireccion,
-
-            // CORRECCIÓN: Convertir Double a Int?
             visibilidadPorcentajeObs = dataFrag2.visibilidad?.toInt(),
-
-            // CORRECCIÓN: En el fragment se llama 'fenomenos', en la BD 'fenomenosDiversos1hr'
             fenomenosDiversos1hr = dataFrag2.fenomenos,
 
-            // DATOS FRAG 3
+            // Frag 3
             estadoTiempo24hr = dataFrag3.estadoTiempo24hr,
             estadoTemperatura24hr = dataFrag3.estadoTemperatura24hr,
             vientoDireccion24hr = dataFrag3.vientoDireccion24hr,
             visibilidadPorcentaje24hr = dataFrag3.visibilidadPorcentaje24hr,
-
-            // CORRECCIÓN: Eliminamos dataFrag1.precipTipo porque ya no existe ahí.
-            // Usamos directamente lo del Frag 3.
             fenomenosDiversos24hr = dataFrag3.fenomenosDiversos24hr
         )
 
-        // --- 5. Guardar en BD ---
+        // 3. Guardar o Actualizar
         try {
-            val id = dbHelper.addRegistro(registroCompleto)
-            if (id > -1) {
-                Toast.makeText(this, "¡Guardado Exitoso!", Toast.LENGTH_LONG).show()
-                //finish()
+            if (registroEdicion == null) {
+                // INSERTAR NUEVO
+                val id = dbHelper.addRegistro(nuevoRegistro)
+                if (id > -1) {
+                    Toast.makeText(this, "Guardado Exitoso", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    Toast.makeText(this, "Error al guardar (Fecha duplicada)", Toast.LENGTH_LONG)
+                        .show()
+                }
             } else {
-                Toast.makeText(
-                    this,
-                    "Error: Ya existe un registro para hoy ($fechaActualParaBD)",
-                    Toast.LENGTH_LONG
-                ).show()
+                // ACTUALIZAR EXISTENTE
+                val filas = dbHelper.updateRegistro(nuevoRegistro)
+                if (filas > 0) {
+                    Toast.makeText(this, "Registro Actualizado", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    Toast.makeText(this, "Error al actualizar", Toast.LENGTH_SHORT).show()
+                }
             }
         } catch (e: Exception) {
-            Log.e("DB_ERROR", "Error guardando", e)
-            Toast.makeText(this, "Error técnico: ${e.message}", Toast.LENGTH_SHORT).show()
+            Log.e("DB_ERROR", "Error", e)
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // Clase Adapter (Sin cambios mayores, solo para asegurar que funcione)
-    private class ClimateFormPagerAdapter(activity: AppCompatActivity) :
+    // CLASE ADAPTER INTERNA
+    // Modificada para llamar a cargarDatos cuando el fragmento esté listo
+    private inner class ClimateFormPagerAdapter(activity: AppCompatActivity) :
         FragmentStateAdapter(activity) {
 
-        // Cacheamos los fragmentos para poder pedirles los datos luego
         private var temperaturasFragment: TemperaturasFragment? = null
         private var estadoHoraFragment: EstadoHoraFragment? = null
         private var estado24HFragment: Estado24HFragment? = null
@@ -185,16 +194,20 @@ class RegistroClimaActivity : AppCompatActivity() {
             return when (position) {
                 0 -> {
                     if (temperaturasFragment == null) temperaturasFragment = TemperaturasFragment()
+                    // Si estamos editando, pasarle los datos
+                    registroEdicion?.let { temperaturasFragment?.arguments = createBundle(it, 1) }
                     temperaturasFragment!!
                 }
 
                 1 -> {
                     if (estadoHoraFragment == null) estadoHoraFragment = EstadoHoraFragment()
+                    registroEdicion?.let { estadoHoraFragment?.arguments = createBundle(it, 2) }
                     estadoHoraFragment!!
                 }
 
                 2 -> {
                     if (estado24HFragment == null) estado24HFragment = Estado24HFragment()
+                    registroEdicion?.let { estado24HFragment?.arguments = createBundle(it, 3) }
                     estado24HFragment!!
                 }
 
@@ -202,9 +215,15 @@ class RegistroClimaActivity : AppCompatActivity() {
             }
         }
 
-        // Getters seguros
+        // Helpers para recuperar instancias
         fun getTemperaturasFragment() = temperaturasFragment
         fun getEstadoHoraFragment() = estadoHoraFragment
         fun getEstado24HFragment() = estado24HFragment
+
+        // Helper para no complicarnos con Bundles serializables,
+        // usaremos un truco en el onResume de los fragments mejor.
+        private fun createBundle(reg: RegistroClimatico, type: Int): Bundle {
+            return Bundle() // Placeholder
+        }
     }
 }

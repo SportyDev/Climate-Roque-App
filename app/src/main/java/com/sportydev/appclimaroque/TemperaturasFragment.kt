@@ -38,6 +38,8 @@ class TemperaturasFragment : Fragment() {
     private lateinit var etEvaporacionMm: EditText
     private lateinit var etEvaporacion24hrs: EditText
 
+    private var datosCargados = false
+
     // Helada
     private lateinit var cbHelada: CheckBox
 
@@ -67,6 +69,16 @@ class TemperaturasFragment : Fragment() {
 
         // 4. Inicializar Helada
         cbHelada = view.findViewById(R.id.cbHelada)
+
+    }
+    // Agrega esto en TemperaturasFragment.kt
+    override fun onResume() {
+        super.onResume()
+        // Buscar si la actividad tiene un registro para editar
+        val activity = requireActivity() as? RegistroClimaActivity
+        activity?.registroEdicion?.let { datos ->
+            cargarDatos(datos) // Llamamos a la función que creamos en el Paso 1
+        }
     }
 
     // Función auxiliar para convertir texto a Double de forma segura
@@ -96,5 +108,25 @@ class TemperaturasFragment : Fragment() {
             // Helada
             helada = cbHelada.isChecked
         )
+    }
+    // Agrega esto dentro de TemperaturasFragment
+
+    fun cargarDatos(registro: RegistroClimatico) {
+        // 2. IMPORTANTE: Si ya cargamos datos una vez, NO hacer nada
+        // para respetar lo que el usuario haya editado.
+        if (datosCargados) return
+
+        // Llenar EditTexts
+        etTempAmbiente.setText(registro.tempAmbiente?.toString() ?: "")
+        etTempMaxima.setText(registro.tempMax?.toString() ?: "")
+        etTempMinima.setText(registro.tempMin?.toString() ?: "")
+        etCantidadLluvia.setText(registro.precipitacionMm?.toString() ?: "")
+        etLecturaMicrometro.setText(registro.evapLecturaMicrometro?.toString() ?: "")
+        etEvaporacionMm.setText(registro.evapMm?.toString() ?: "")
+        etEvaporacion24hrs.setText(registro.evap24hr?.toString() ?: "")
+        cbHelada.isChecked = registro.helada
+
+        // 3. Marcar como cargado para que no se sobrescriba
+        datosCargados = true
     }
 }

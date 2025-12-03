@@ -41,6 +41,8 @@ class Estado24HFragment : Fragment() {
     private lateinit var etVisibilidad: EditText
     private lateinit var etFenomenos: EditText
 
+    private var datosCargados = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -72,6 +74,15 @@ class Estado24HFragment : Fragment() {
         // Visibilidad y Fenómenos
         etVisibilidad = view.findViewById(R.id.etVisibilidad24h)
         etFenomenos = view.findViewById(R.id.etFenomenos24h)
+    }
+
+    // Agrega esto en Estado24HFragment.kt
+    override fun onResume() {
+        super.onResume()
+        val activity = requireActivity() as? RegistroClimaActivity
+        activity?.registroEdicion?.let { datos ->
+            cargarDatos(datos)
+        }
     }
 
     // Función auxiliar para convertir String a Int de forma segura (ej: "10" -> 10, "10.5" -> 10, "" -> null)
@@ -109,5 +120,31 @@ class Estado24HFragment : Fragment() {
             visibilidadPorcentaje24hr = etVisibilidad.text.toString().toIntOrNullSafe(),
             fenomenosDiversos24hr = etFenomenos.text.toString()
         )
+    }
+    // Agrega esto dentro de Estado24HFragment
+
+    fun cargarDatos(registro: RegistroClimatico) {
+        // 2. VALIDACIÓN
+        if (datosCargados) return
+
+        // Cargar Cielo
+        val cielo = registro.estadoTiempo24hr ?: ""
+        cbDespejado.isChecked = cielo.contains("Despejado")
+        cbMedioNublado.isChecked = cielo.contains("Medio Nublado")
+        cbNublado.isChecked = cielo.contains("Nublado")
+
+        // Cargar Temperatura
+        val temp = registro.estadoTemperatura24hr ?: ""
+        cbFrio.isChecked = temp.contains("Frío")
+        cbFresco.isChecked = temp.contains("Fresco")
+        cbTemplado.isChecked = temp.contains("Templado")
+        cbCaluroso.isChecked = temp.contains("Caluroso")
+
+        etDireccionViento.setText(registro.vientoDireccion24hr ?: "")
+        etVisibilidad.setText(registro.visibilidadPorcentaje24hr?.toString() ?: "")
+        etFenomenos.setText(registro.fenomenosDiversos24hr ?: "")
+
+        // 3. BLOQUEAR
+        datosCargados = true
     }
 }

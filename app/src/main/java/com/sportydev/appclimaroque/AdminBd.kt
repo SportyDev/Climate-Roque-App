@@ -135,7 +135,7 @@ class AdminBdClima(private val contexto: Context) : SQLiteOpenHelper(contexto, D
         }
 
         val id = db.insert(TABLE_REGISTROS, null, values)
-        db.close()
+        //db.close()
         return id
     }
 
@@ -158,7 +158,7 @@ class AdminBdClima(private val contexto: Context) : SQLiteOpenHelper(contexto, D
         }
 
         cursor.close()
-        db.close()
+        //db.close()
         return registro
     }
 
@@ -178,7 +178,7 @@ class AdminBdClima(private val contexto: Context) : SQLiteOpenHelper(contexto, D
         }
 
         cursor.close()
-        db.close()
+        //db.close()
         return listaRegistros
     }
 
@@ -222,7 +222,7 @@ class AdminBdClima(private val contexto: Context) : SQLiteOpenHelper(contexto, D
             arrayOf(registro.id.toString())
         )
 
-        db.close()
+        //db.close()
         return rowsAffected
     }
 
@@ -236,7 +236,7 @@ class AdminBdClima(private val contexto: Context) : SQLiteOpenHelper(contexto, D
             "$COL_ID = ?",
             arrayOf(id.toString())
         )
-        db.close()
+        //db.close()
         return rowsAffected
     }
 
