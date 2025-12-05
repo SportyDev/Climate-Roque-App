@@ -1,6 +1,7 @@
 package com.sportydev.appclimaroque
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.Window
@@ -166,40 +167,36 @@ class ActivityMonthlyReports : AppCompatActivity() {
     }
 
     private fun generateMonthlyReport(monthName: String, monthNumber: Int) {
-        // Aquí implementas la lógica para generar el reporte del mes
-        // Por ejemplo: crear PDF, exportar datos, etc.
+        // 1. Obtener instancia de BD
+        val db = AdminBdClima(this)
 
-        // Ejemplo de implementación básica:
-        /*
-        try {
-            // Lógica para generar reporte
-            showToast("Generando reporte de $monthName...")
+        // TODO: Asegúrate de tener el año correcto (puedes pasarlo como extra o usar el actual)
+        val anio = 2025
 
-            // Simular proceso de generación
-            // En una implementación real, aquí harías:
-            // 1. Consultar datos de la base de datos para el mes específico
-            // 2. Generar PDF o documento
-            // 3. Guardar en almacenamiento
-            // 4. Mostrar resultado al usuario
+        // 2. Obtener los registros de la BD
+        val listaRegistros = db.getRegistrosPorMes(monthNumber, anio)
 
-        } catch (e: Exception) {
-            showToast("Error al generar reporte: ${e.message}")
+        if (listaRegistros.isEmpty()) {
+            showToast("No hay registros guardados para $monthName $anio")
+            // Aún así podríamos querer generar el reporte vacío, tú decides.
+            // Si quieres generar aunque esté vacío, quita el return.
+            // return
         }
-        */
+
+        // 3. Generar el PDF Real
+        val pdfGenerator = ReportePdfGenerator(this)
+        pdfGenerator.generarReporteReal(monthNumber, anio, listaRegistros)
     }
 
     private fun viewMonthData(monthName: String, monthNumber: Int) {
-        // Aquí implementas la lógica para mostrar los datos del mes
-        // Por ejemplo: abrir nueva actividad con datos detallados
-
-        // Ejemplo de implementación básica:
-        /*
-        val intent = Intent(this, MonthDataActivity::class.java)
+        val intent = Intent(this, ActivityMonthSummary::class.java)
         intent.putExtra("MONTH_NAME", monthName)
         intent.putExtra("MONTH_NUMBER", monthNumber)
-        intent.putExtra("YEAR", 2025)
+        intent.putExtra(
+            "YEAR",
+            2025
+        ) // Ojo: Aquí deberías manejar el año dinámicamente si tu app crece
         startActivity(intent)
-        */
     }
 
     // Función auxiliar para mostrar mensajes (opcional)

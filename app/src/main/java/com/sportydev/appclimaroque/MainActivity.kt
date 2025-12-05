@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     // Elementos del Estado Vacío
     private lateinit var btnRegistrar: Button
+    private lateinit var btnEditarRegistro: Button
     private lateinit var txtTituloEstado: TextView
     private lateinit var txtDescripcionEstado: TextView
 
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvResumenMaxMin: TextView
     private lateinit var tvResumenEstado: TextView
     private lateinit var tvResumenLluvia: TextView
-    private lateinit var btnEditarRegistro: Button
+    private lateinit var btnCharts: ImageButton
 
     // --- Lógica y Base de Datos ---
     private lateinit var dbHelper: AdminBdClima
@@ -94,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         btnNextMonth = findViewById(R.id.btnNextMonth)
         btnOpenDatePicker = findViewById(R.id.btnOpenDatePicker)
         recyclerDays = findViewById(R.id.recyclerDays)
+        btnCharts = findViewById<ImageButton>(R.id.btnCharts) // Asegúrate de tener la referencia en initViews si prefieres
 
         // Toolbar inferior
         btnMothy = findViewById(R.id.btnReportMonth)
@@ -151,6 +153,10 @@ class MainActivity : AppCompatActivity() {
         btnNextMonth.setOnClickListener {
             currentCalendar.add(Calendar.MONTH, 1)
             updateCalendar()
+        }
+        btnCharts.setOnClickListener {
+            val intent = Intent(this, ActivityCharts::class.java)
+            startActivity(intent)
         }
 
         // Date Picker

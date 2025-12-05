@@ -9,7 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper
 import java.io.FileOutputStream
 import java.io.IOException
 
-class AdminBdClima(private val contexto: Context) : SQLiteOpenHelper(contexto, DATABASE_NAME, null, DATABASE_VERSION) {
+class AdminBdClima(private val contexto: Context) :
+    SQLiteOpenHelper(contexto, DATABASE_NAME, null, DATABASE_VERSION) {
 
     private val dbPath: String = contexto.getDatabasePath(DATABASE_NAME).path
 
@@ -240,6 +241,157 @@ class AdminBdClima(private val contexto: Context) : SQLiteOpenHelper(contexto, D
         return rowsAffected
     }
 
+    // Dentro de AdminBdClima...
+
+    fun calcularResumenMensual(mes: Int, anio: Int): ResumenMensualData {
+        val data = ResumenMensualData()
+        val db = this.readableDatabase
+
+        // Formato para SQLite: '2025-09-%'
+        val mesStr = if (mes < 10) "0$mes" else "$mes"
+        val fechaLike = "$anio-$mesStr-%"
+
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_REGISTROS WHERE $COL_FECHA LIKE ?",
+            arrayOf(fechaLike)
+        )
+
+        var countTemp = 0
+        var sumTemp = 0.0
+        var countLluvia = 0
+        var countEvap = 0
+
+        if (cursor.moveToFirst()) {
+            do {
+                val fechaCompleta = cursor.getString(cursor.getColumnIndexOrThrow(COL_FECHA))
+                val dia = fechaCompleta.takeLast(2) // "2025-09-15" -> "15"
+
+                // 1. Temperaturas
+                val max = getDoubleFromCursor(cursor, COL_TEMP_MAX)
+                val min = getDoubleFromCursor(cursor, COL_TEMP_MIN)
+                val amb = getDoubleFromCursor(
+                    cursor,
+                    COL_TEMP_AMBIENTE
+                ) // Para la media si quieres, o (max+min)/2
+
+                // Max Absoluta
+                if (max != null) {
+                    if (data.tempMaxAbs == null || max > data.tempMaxAbs!!) {
+                        data.tempMaxAbs = max
+                        data.diaTempMax = dia
+                    }
+                }
+                // Min Absoluta
+                if (min != null) {
+                    if (data.tempMinAbs == null || min < data.tempMinAbs!!) {
+                        data.tempMinAbs = min
+                        data.diaTempMin = dia
+                    }
+                }
+                // Media (usando ambiente o promedio de extremas)
+                if (amb != null) {
+                    sumTemp += amb
+                    countTemp++
+                }
+
+                // 2. Lluvia
+                val lluvia = getDoubleFromCursor(cursor, COL_PRECIP_MM) ?: 0.0
+                data.lluviaTotal += lluvia
+                countLluvia++
+
+                if (data.lluviaMax24 == null || lluvia > data.lluviaMax24!!) {
+                    data.lluviaMax24 = lluvia
+                    data.diaLluviaMax = dia
+                }
+                // Min 24h (Probablemente siempre sea 0)
+                if (data.lluviaMin24 == null || lluvia < data.lluviaMin24!!) {
+                    data.lluviaMin24 = lluvia
+                    data.diaLluviaMin = dia
+                }
+
+                // Conteos Lluvia
+                if (lluvia >= 0.1) data.diasLluvia++
+                if (lluvia > 0.0 && lluvia < 0.1) data.diasLluviaInap++ // Lógica ejemplo
+
+                // 3. Evaporación
+                val evap = getDoubleFromCursor(cursor, COL_EVAP_MM)
+                if (evap != null) {
+                    data.evapTotal += evap
+                    countEvap++
+
+                    if (data.evapMax == null || evap > data.evapMax!!) {
+                        data.evapMax = evap
+                        data.diaEvapMax = dia
+                    }
+                    if (data.evapMin == null || evap < data.evapMin!!) {
+                        data.evapMin = evap
+                        data.diaEvapMin = dia
+                    }
+                }
+
+                // 4. Fenómenos (Busqueda de texto)
+                val fenomenos =
+                    cursor.getString(cursor.getColumnIndexOrThrow(COL_FENOMENOS_1HR)) ?: ""
+                val fenomenos24 =
+                    cursor.getString(cursor.getColumnIndexOrThrow(COL_FENOMENOS_24HR)) ?: ""
+                val todoFenomenos = "$fenomenos $fenomenos24".uppercase()
+
+                if (todoFenomenos.contains("NIEBLA") || todoFenomenos.contains("NEBLINA")) data.diasNiebla++
+                if (todoFenomenos.contains("TEMPESTAD") || todoFenomenos.contains("ELÉCTRICA")) data.diasTempestad++
+                if (todoFenomenos.contains("NIEVE") || todoFenomenos.contains("NEVADA")) data.diasNieve++
+                if (todoFenomenos.contains("GRANIZO")) data.diasGranizo++
+
+                // 5. Cielo (Contar según el estado observado)
+                val cielo =
+                    cursor.getString(cursor.getColumnIndexOrThrow(COL_ESTADO_TIEMPO_OBS)) ?: ""
+                when {
+                    cielo.contains("Despejado", true) -> data.diasDespejado++
+                    cielo.contains("Medio Nublado", true) -> data.diasMedioNublado++
+                    cielo.contains("Nublado", true) -> data.diasNublado++
+                }
+
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+
+        // Calcular Medias Finales
+        if (countTemp > 0) data.tempMedia = sumTemp / countTemp
+        if (countLluvia > 0) data.lluviaMedia =
+            data.lluviaTotal / countLluvia // O dividir entre días del mes
+        if (countEvap > 0) data.evapMedia = data.evapTotal / countEvap
+
+        return data
+    }
+    // En AdminBdClima.kt
+
+    fun getRegistrosPorMes(mes: Int, anio: Int): List<RegistroClimatico> {
+        val lista = mutableListOf<RegistroClimatico>()
+        val db = this.readableDatabase
+
+        // Formato para buscar: '2025-09-%' (El % es el comodín)
+        val mesStr = if (mes < 10) "0$mes" else "$mes"
+        val fechaLike = "$anio-$mesStr-%"
+
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_REGISTROS WHERE $COL_FECHA LIKE ? ORDER BY $COL_FECHA ASC",
+            arrayOf(fechaLike)
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                lista.add(cursorToRegistro(cursor))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return lista
+    }
+
+    // Helper privado por si no lo tienes accesible
+    private fun getDoubleFromCursor(cursor: Cursor, colName: String): Double? {
+        val idx = cursor.getColumnIndex(colName)
+        return if (idx != -1 && !cursor.isNull(idx)) cursor.getDouble(idx) else null
+    }
+
     /**
      * Función ayudante para convertir un Cursor a un objeto RegistroClimatico.
      */
@@ -250,11 +402,13 @@ class AdminBdClima(private val contexto: Context) : SQLiteOpenHelper(contexto, D
             val index = cursor.getColumnIndex(colName)
             return if (cursor.isNull(index)) null else cursor.getDouble(index)
         }
+
         // Helper para leer Int o Null
         fun getInt(colName: String): Int? {
             val index = cursor.getColumnIndex(colName)
             return if (cursor.isNull(index)) null else cursor.getInt(index)
         }
+
         // Helper para leer String o Null
         fun getString(colName: String): String? {
             val index = cursor.getColumnIndex(colName)

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvSummaryTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="Resumen: SEPTIEMBRE 2025"
+            android:textColor="#1976D2"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            style="@style/SectionTitle"
+            android:text="TEMPERATURAS (°C)" />
+
+        <androidx.cardview.widget.CardView style="@style/SummaryCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <include
+                    android:id="@+id/rowTempMax"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowTempMin"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowTempMedia"
+                    layout="@layout/item_summary_row" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            style="@style/SectionTitle"
+            android:text="PRECIPITACIÓN / LLUVIA (mm)" />
+
+        <androidx.cardview.widget.CardView style="@style/SummaryCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <include
+                    android:id="@+id/rowLluviaTotal"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowLluviaMedia"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowLluviaMax24"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowLluviaMin24"
+                    layout="@layout/item_summary_row" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            style="@style/SectionTitle"
+            android:text="EVAPORACIÓN (mm)" />
+
+        <androidx.cardview.widget.CardView style="@style/SummaryCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <include
+                    android:id="@+id/rowEvapTotal"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowEvapMedia"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowEvapMax"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowEvapMin"
+                    layout="@layout/item_summary_row" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            style="@style/SectionTitle"
+            android:text="NÚMERO DE DÍAS CON..." />
+
+        <androidx.cardview.widget.CardView style="@style/SummaryCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <include
+                    android:id="@+id/rowDiasLluvia"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowDiasLluviaInap"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowDiasNiebla"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowDiasTempestad"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowDiasNieve"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowDiasGranizo"
+                    layout="@layout/item_summary_row" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            style="@style/SectionTitle"
+            android:text="ESTADO DEL CIELO (DÍAS)" />
+
+        <androidx.cardview.widget.CardView style="@style/SummaryCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <include
+                    android:id="@+id/rowCieloDespejado"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowCieloMedio"
+                    layout="@layout/item_summary_row" />
+
+                <include
+                    android:id="@+id/rowCieloNublado"
+                    layout="@layout/item_summary_row" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#757575"
+            android:text="Cerrar Resumen" />
+
+    </LinearLayout>
+</ScrollView>

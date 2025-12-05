@@ -42,6 +42,8 @@ dependencies {
     implementation(libs.material)
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation(files("libs/pdfbox-android-2.0.27.0.aar"))
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
