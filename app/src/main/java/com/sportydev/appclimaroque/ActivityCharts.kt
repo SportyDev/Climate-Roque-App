@@ -7,7 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 
@@ -26,17 +31,23 @@ class ActivityCharts : AppCompatActivity() {
 
         lineChart = findViewById(R.id.chartTemperaturas)
         barChart = findViewById(R.id.chartLluvia)
-        btnVolver = findViewById(R.id.btnVolver)
 
-        btnVolver.setOnClickListener { finish() }
+        // --- CONFIGURAR TOOLBAR ---
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbarCharts)
+        setSupportActionBar(toolbar)
+
+        // Habilitar la flecha de atrás y hacer que funcione
+        toolbar.setNavigationOnClickListener {
+            finish() // Cierra la actividad y vuelve al menú
+        }
+
 
         cargarGraficas()
     }
 
     private fun cargarGraficas() {
         // 1. Obtener todos los registros de la BD (Ordenados por fecha)
-        // Nota: Asegúrate de que tu getAllRegistros() use "ORDER BY fecha ASC" para que la gráfica tenga sentido cronológico.
-        // Si tu query actual es DESC, invierte la lista aquí con .reversed()
+
         val registros = dbHelper.getAllRegistros().reversed()
 
         if (registros.isEmpty()) return
@@ -54,7 +65,7 @@ class ActivityCharts : AppCompatActivity() {
             entriesAmb.add(Entry(index.toFloat(), registro.tempAmbiente?.toFloat() ?: 0f))
 
             // Guardamos la fecha corta para ponerla abajo en la gráfica
-            fechasLabels.add(registro.fecha.takeLast(5)) // Ej: "2025-12-01" -> "12-01"
+            fechasLabels.add(registro.fecha.takeLast(5))
         }
 
         // Configurar Línea Máxima (Roja)
@@ -100,7 +111,6 @@ class ActivityCharts : AppCompatActivity() {
         val barData = BarData(setLluvia)
         barChart.data = barData
 
-        // Embellecer Gráfica de Barras
         barChart.description.isEnabled = false
         barChart.xAxis.valueFormatter = IndexAxisValueFormatter(fechasLabels)
         barChart.xAxis.position = XAxis.XAxisPosition.BOTTOM

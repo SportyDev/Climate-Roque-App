@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,14 +29,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var daysAdapter: DaysAdapter
 
     // --- Vistas de Navegación Inferior ---
+    private lateinit var btnSync: ImageButton
+    private lateinit var btnManual: ImageButton
     private lateinit var btnMothy: ImageButton // Botón de reportes mensuales
 
-    // --- Vistas del Contenido Principal (CardView) ---
     // Layouts contenedores
     private lateinit var layoutEmptyState: LinearLayout // Estado "Sin Registro"
-    private lateinit var layoutDataState: LinearLayout  // Estado "Con Datos"
+    private lateinit var layoutDataState: androidx.constraintlayout.widget.ConstraintLayout
 
-    // Elementos del Estado Vacío
     private lateinit var btnRegistrar: Button
     private lateinit var btnEditarRegistro: Button
     private lateinit var txtTituloEstado: TextView
@@ -46,6 +47,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvResumenMaxMin: TextView
     private lateinit var tvResumenEstado: TextView
     private lateinit var tvResumenLluvia: TextView
+    private lateinit var tvResumenViento: TextView
+    private lateinit var tvResumenEvap: TextView // Nuevo
     private lateinit var btnCharts: ImageButton
 
     // --- Lógica y Base de Datos ---
@@ -60,7 +63,7 @@ class MainActivity : AppCompatActivity() {
     private val dbDateFormat = SimpleDateFormat(
         "yyyy-MM-dd",
         Locale.getDefault()
-    ) // IMPORTANTE: Mismo formato que al guardar
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,13 +81,9 @@ class MainActivity : AppCompatActivity() {
         updateCalendar()
     }
 
-    /**
-     * IMPORTANTE: onResume se ejecuta cada vez que esta pantalla vuelve a ser visible.
-     * Aquí actualizamos los datos por si el usuario acaba de guardar un registro.
-     */
+
     override fun onResume() {
         super.onResume()
-        // Forzamos la actualización de la UI con la fecha que esté seleccionada
         updateUIForSelectedDate()
     }
 
@@ -95,10 +94,13 @@ class MainActivity : AppCompatActivity() {
         btnNextMonth = findViewById(R.id.btnNextMonth)
         btnOpenDatePicker = findViewById(R.id.btnOpenDatePicker)
         recyclerDays = findViewById(R.id.recyclerDays)
-        btnCharts = findViewById<ImageButton>(R.id.btnCharts) // Asegúrate de tener la referencia en initViews si prefieres
+        btnCharts =
+            findViewById<ImageButton>(R.id.btnCharts) // Asegúrate de tener la referencia en initViews si prefieres
 
         // Toolbar inferior
         btnMothy = findViewById(R.id.btnReportMonth)
+        btnSync = findViewById(R.id.btnSync)
+        btnManual = findViewById(R.id.btnManual)
 
         // Botón Today (puede ser nulo dependiendo del layout)
         val todayButton = findViewById<TextView?>(R.id.btnToday)
@@ -106,7 +108,6 @@ class MainActivity : AppCompatActivity() {
             btnToday = todayButton
         }
 
-        // --- REFERENCIAS A LOS NUEVOS LAYOUTS (Debes haber actualizado el XML) ---
         layoutEmptyState = findViewById(R.id.layoutEmptyState)
         layoutDataState = findViewById(R.id.layoutDataState)
 
@@ -121,18 +122,18 @@ class MainActivity : AppCompatActivity() {
         tvResumenEstado = findViewById(R.id.tvResumenEstado)
         tvResumenLluvia = findViewById(R.id.tvResumenLluvia)
         btnEditarRegistro = findViewById(R.id.btnEditarRegistro)
+        tvResumenViento = findViewById(R.id.tvResumenViento)
+        tvResumenEvap = findViewById(R.id.tvResumenEvap)
     }
 
     private fun setupRecyclerView() {
         daysAdapter = DaysAdapter(emptyList()) { day, position ->
-            // Callback: Al hacer clic en un día del recycler
             if (day.isSelectable) {
                 // Actualizamos el calendario seleccionado
                 selectedCalendar.set(Calendar.YEAR, currentCalendar.get(Calendar.YEAR))
                 selectedCalendar.set(Calendar.MONTH, currentCalendar.get(Calendar.MONTH))
                 selectedCalendar.set(Calendar.DAY_OF_MONTH, day.dayNumber)
 
-                // IMPORTANTE: Actualizar la tarjeta central inmediatamente
                 updateUIForSelectedDate()
             }
         }
@@ -145,11 +146,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
+
+        btnSync.setOnClickListener {
+
+            Toast.makeText(this, "Sincronizando con la Base de Datos...", Toast.LENGTH_SHORT).show()
+
+            it.postDelayed({
+                Toast.makeText(this, "¡Sincronización completada con éxito!", Toast.LENGTH_LONG)
+                    .show()
+            }, 2000)
+        }
+
+        btnManual.setOnClickListener {
+            Toast.makeText(this, "Abriendo Manual de Usuario...", Toast.LENGTH_SHORT).show()
+        }
         // Navegación Meses
         btnPrevMonth.setOnClickListener {
             currentCalendar.add(Calendar.MONTH, -1)
             updateCalendar()
         }
+
         btnNextMonth.setOnClickListener {
             currentCalendar.add(Calendar.MONTH, 1)
             updateCalendar()
@@ -175,8 +191,6 @@ class MainActivity : AppCompatActivity() {
 
         // 1. Botón "REGISTRAR" (Visible solo si NO hay datos)
         btnRegistrar.setOnClickListener {
-            // Aquí lanzas tu Activity de Formulario (RegistroClimaActivity)
-            // Podrías pasar la fecha seleccionada con .putExtra si quisieras que el formulario se abra en esa fecha
             val intent = Intent(this, RegistroClimaActivity::class.java)
             startActivity(intent)
         }
@@ -197,10 +211,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * LÓGICA PRINCIPAL:
-     * Consulta la base de datos para la fecha seleccionada y decide qué Layout mostrar.
-     */
+
     private fun updateUIForSelectedDate() {
         val dateString = dbDateFormat.format(selectedCalendar.time)
 
@@ -208,42 +219,28 @@ class MainActivity : AppCompatActivity() {
         val registro = dbHelper.getRegistroByFecha(dateString)
 
         if (registro != null) {
-            // CASO A: SÍ HAY DATOS
-            // Ocultar estado vacío, mostrar estado de datos
             layoutEmptyState.visibility = View.GONE
             layoutDataState.visibility = View.VISIBLE
 
-            // Llenar los datos del resumen
-            tvResumenAmbiente.text = "${registro.tempAmbiente ?: "--"} °C"
+            // 1. Temperaturas
+            tvResumenAmbiente.text = "${registro.tempAmbiente ?: "--"}°"
             tvResumenMaxMin.text =
-                "Máx: ${registro.tempMax ?: "--"}°C / Mín: ${registro.tempMin ?: "--"}°C"
+                "H:${registro.tempMax?.toInt() ?: "--"}° L:${registro.tempMin?.toInt() ?: "--"}°"
 
-            // Lógica visual para estado del tiempo y viento
-            val cielo = registro.estadoTiempoObs ?: "Sin datos"
-            val viento = registro.vientoDireccionObs ?: "-"
-            tvResumenEstado.text = "$cielo, Viento $viento"
+            // 2. Estado (Cielo)
+            tvResumenEstado.text = registro.estadoTiempoObs ?: "Sin datos"
 
+            // 3. Lluvia
             tvResumenLluvia.text = "${registro.precipitacionMm ?: 0} mm"
 
+            // 4. Viento (NUEVO)
+            val dirViento = registro.vientoDireccionObs ?: "-"
+            tvResumenViento.text = "$dirViento" // Puedes agregar velocidad si quieres: "$dirViento"
+
+            // 5. Evaporación (NUEVO)
+            tvResumenEvap.text = "${registro.evapMm ?: 0} mm"
+
         } else {
-            // CASO B: NO HAY DATOS (NULL)
-            // Mostrar estado vacío, ocultar estado de datos
-            layoutEmptyState.visibility = View.VISIBLE
-            layoutDataState.visibility = View.GONE
-
-            // Personalizar el mensaje dependiendo si es HOY o un día PASADO
-            val today = Calendar.getInstance()
-            val isToday = dbDateFormat.format(today.time) == dateString
-
-            if (isToday) {
-                txtTituloEstado.text = "REGISTRO DE HOY"
-                txtDescripcionEstado.text = "Aún no has registrado el clima de hoy."
-                btnRegistrar.text = "REGISTRAR CLIMA DE HOY"
-            } else {
-                txtTituloEstado.text = "SIN REGISTRO"
-                txtDescripcionEstado.text = "No hay datos para el día $dateString"
-                btnRegistrar.text = "REGISTRAR ESTE DÍA"
-            }
         }
     }
 

@@ -3,22 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F5F7FA">
 
-    <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarCalendar"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:elevation="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:elevation="0dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingVertical="12dp">
 
             <ImageButton
                 android:id="@+id/btnOpenDatePicker"
@@ -28,14 +27,17 @@
                 android:src="@drawable/ic_calendar24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="#455A64" />
 
             <TextView
                 android:id="@+id/txtMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
                 android:text="Agosto 2025"
-                android:textColor="@android:color/black"
+                android:textColor="#263238"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -45,35 +47,34 @@
 
             <ImageButton
                 android:id="@+id/btnPrevMonth"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_back_28"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/txtMonth"
                 app:layout_constraintEnd_toStartOf="@id/txtMonth"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/txtMonth"
+                app:tint="#455A64" />
 
             <ImageButton
                 android:id="@+id/btnNextMonth"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_next_28"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/txtMonth"
                 app:layout_constraintStart_toEndOf="@id/txtMonth"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/txtMonth"
+                app:tint="#455A64" />
 
             <TextView
                 android:id="@+id/btnToday"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_marginEnd="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_today_pill"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
                 android:text="HOY"
                 android:textColor="#1976D2"
                 android:textSize="12sp"
@@ -83,30 +84,24 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- RecyclerView horizontal con los días -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerDays"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
-        android:overScrollMode="never"
-        android:scrollbars="none"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:paddingBottom="8dp"
         app:layout_constraintTop_toBottomOf="@id/toolbarCalendar" />
-    <!-- Área de contenido principal -->
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cardMainContent"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp"
+        android:layout_margin="20dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
         app:layout_constraintBottom_toTopOf="@id/toolbarBottom"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recyclerDays">
 
         <FrameLayout
@@ -117,171 +112,266 @@
                 android:id="@+id/layoutEmptyState"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal"
+                android:background="@android:color/white"
+                android:gravity="center"
                 android:orientation="vertical"
-                android:padding="16dp"
+                android:padding="24dp"
                 android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginBottom="16dp"
+                    android:src="@drawable/ic_climate"
+                    app:tint="#CFD8DC" />
 
                 <TextView
                     android:id="@+id/txtTitulo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="12dp"
+                    android:layout_marginBottom="8dp"
                     android:text="Sin Registro"
-                    android:textAllCaps="true"
-                    android:textColor="@color/primary"
-                    android:textSize="34sp"
+                    android:textColor="#455A64"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/txtdescripcion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
                     android:gravity="center"
-                    android:paddingBottom="12dp"
-                    android:text="Aún no hay datos para este día"
-                    android:textAllCaps="true"
-                    android:textColor="@android:color/black"
-                    android:textSize="18sp" />
-
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:contentDescription="Icono clima"
-                    android:src="@drawable/ic_climate" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:text="No hay datos registrados\npara este día."
+                    android:textColor="#78909C" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnOpenBottomSheet"
                     android:layout_width="match_parent"
-                    android:layout_height="65dp"
-                    android:backgroundTint="@color/primary_dark"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_button_rounded"
+                    android:backgroundTint="#1976D2"
                     android:text="REGISTRAR CLIMA"
-                    android:textColor="@android:color/white" />
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutDataState"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#F5F5F5"
-                android:orientation="vertical"
-                android:padding="16dp"
+                android:background="#1565C0"
+                android:padding="24dp"
                 android:visibility="gone">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/lblResumen"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:gravity="center"
-                    android:text="Resumen del Día"
-                    android:textColor="@color/primary_dark"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:letterSpacing="0.1"
+                    android:text="RESUMEN DEL DÍA"
+                    android:textColor="#90CAF9"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvResumenAmbiente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:includeFontPadding="false"
+                    android:text="25°"
+                    android:textColor="#FFFFFF"
+                    android:textSize="70sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lblResumen" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ambiente"
+                    android:textColor="#BBDEFB"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvResumenAmbiente" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:orientation="horizontal">
+                    android:gravity="end"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@id/tvResumenAmbiente"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvResumenAmbiente">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Ambiente:"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvResumenAmbiente"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="25°C" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Máx / Mín:"
-                        android:textStyle="bold" />
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="8dp"
+                        android:src="@drawable/ic_climate"
+                        app:tint="#FFFFFF" />
 
                     <TextView
                         android:id="@+id/tvResumenMaxMin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="28°C / 15°C" />
+                        android:text="H:28° L:15°"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Max / Min"
+                        android:textColor="#90CAF9"
+                        android:textSize="12sp" />
                 </LinearLayout>
 
                 <View
+                    android:id="@+id/divider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="@android:color/darker_gray" />
+                    android:layout_marginTop="24dp"
+                    android:background="#40FFFFFF"
+                    app:layout_constraintTop_toBottomOf="@id/tvResumenAmbiente" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/lblCondiciones"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:text="Condiciones:"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="16dp"
+                    android:text="CONDICIONES"
+                    android:textColor="#90CAF9"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider" />
 
                 <TextView
                     android:id="@+id/tvResumenEstado"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:text="Nublado, Viento Norte"
-                    android:textSize="16sp" />
+                    android:layout_marginEnd="16dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="Nublado"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toStartOf="@id/guidelineCenter"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lblCondiciones" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/lblLluvia"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:text="Lluvia acumulada:"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="16dp"
+                    android:text="LLUVIA"
+                    android:textColor="#90CAF9"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@id/guidelineCenter"
+                    app:layout_constraintTop_toBottomOf="@id/divider" />
 
                 <TextView
                     android:id="@+id/tvResumenLluvia"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="0 mm"
-                    android:textSize="16sp" />
+                    android:text="12 mm"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/guidelineCenter"
+                    app:layout_constraintTop_toBottomOf="@id/lblLluvia" />
+
+                <TextView
+                    android:id="@+id/lblViento"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="VIENTO"
+                    android:textColor="#90CAF9"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvResumenEstado" />
+
+                <TextView
+                    android:id="@+id/tvResumenViento"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Norte"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toStartOf="@id/guidelineCenter"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lblViento" />
+
+                <TextView
+                    android:id="@+id/lblEvap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="EVAPORACIÓN"
+                    android:textColor="#90CAF9"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@id/guidelineCenter"
+                    app:layout_constraintTop_toBottomOf="@id/tvResumenLluvia" />
+
+                <TextView
+                    android:id="@+id/tvResumenEvap"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="5.4 mm"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/guidelineCenter"
+                    app:layout_constraintTop_toBottomOf="@id/lblEvap" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guidelineCenter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.55" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    app:layout_constraintBottom_toTopOf="@id/btnEditarRegistro"
+                    app:layout_constraintTop_toBottomOf="@id/tvResumenEvap" />
 
                 <Button
                     android:id="@+id/btnEditarRegistro"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="24dp"
                     android:backgroundTint="#FF9800"
-                    android:text="VER DETALLES / EDITAR" />
+                    android:text="VER DETALLES / EDITAR"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </FrameLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Toolbar inferior -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarBottom"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:elevation="4dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_bottom_bar"
+        android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -289,30 +379,58 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
+            android:paddingVertical="8dp">
 
             <ImageButton
                 android:id="@+id/btnCharts"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginStart="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Gráficas"
                 android:src="@drawable/ic_bars_34"
+                app:tint="#546E7A"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnManual"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintHorizontal_chainStyle="spread" />
+
+            <ImageButton
+                android:id="@+id/btnManual"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Manual de Usuario"
+                android:src="@drawable/ic_manual_24"
+                app:tint="#546E7A"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnCharts"
+                app:layout_constraintEnd_toStartOf="@id/btnSync"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnSync"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Sincronizar BD"
+                android:src="@drawable/ic_sync_24"
+                app:tint="#546E7A"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnManual"
+                app:layout_constraintEnd_toStartOf="@id/btnReportMonth"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/btnReportMonth"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginEnd="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Configuración"
+                android:contentDescription="Reportes Mensuales"
                 android:src="@drawable/ic_month_34"
+                app:tint="#546E7A"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnSync"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

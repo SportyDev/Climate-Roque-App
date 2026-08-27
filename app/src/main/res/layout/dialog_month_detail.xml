@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="320dp"
+    android:layout_width="340dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_margin="24dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="8dp"
-    app:cardBackgroundColor="@android:color/white">
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,157 +14,85 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Header con título y botón cerrar -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/tvDialogTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="Reporte Mensual"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black" />
+                android:text="Opciones de Reporte"
+                android:textColor="#37474F"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/btnCloseDialog"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:contentDescription="Cerrar"
-                app:tint="#757575" />
-
+                app:tint="#B0BEC5" />
         </RelativeLayout>
 
-        <!-- Contenido principal -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginBottom="24dp"
             android:gravity="center"
-            android:layout_marginBottom="24dp">
+            android:orientation="vertical">
 
-            <!-- Icono del mes -->
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_marginBottom="16dp"
-                android:src="@android:drawable/ic_menu_today"
-                app:tint="#64B5F6" />
-
-            <!-- Nombre del mes -->
             <TextView
                 android:id="@+id/tvMonthName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Septiembre 2025"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#64B5F6"
-                android:layout_marginBottom="8dp" />
+                android:textColor="#1976D2"
+                android:textSize="26sp"
+                android:textStyle="bold" />
 
-            <!-- Descripción -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Selecciona una opción para continuar"
-                android:textSize="14sp"
-                android:textColor="#757575"
-                android:gravity="center" />
-
+            <View
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_line_rounded"
+                android:backgroundTint="#E3F2FD" />
         </LinearLayout>
 
-        <!-- Botones de acción -->
-        <LinearLayout
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnGenerateReport"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Botón Generar Reporte -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/btnGenerateReport"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginBottom="12dp"
-                android:foreground="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="#64B5F6">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@android:drawable/ic_menu_save"
-                        app:tint="@android:color/white" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Generar Reporte"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/white" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Botón Ver Datos -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/btnViewData"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:foreground="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@android:drawable/ic_menu_view"
-                        app:tint="#64B5F6" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ver Datos"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#64B5F6" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-        </LinearLayout>
-
+            android:layout_height="56dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_button_rounded"
+            android:backgroundTint="#1976D2"
+            android:drawableStart="@drawable/ic_save_24"
+            android:drawablePadding="12dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:drawableTint="@color/white"
+            android:text="GENERAR PDF"
+            android:textAlignment="textStart"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnViewData"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_button_outline"
+            android:drawableStart="@drawable/ic_visibility_24"
+            android:drawablePadding="12dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:text="VER DATOS EN PANTALLA"
+            android:textAlignment="textStart"
+            android:textColor="#1976D2"
+            android:textSize="14sp"
+            android:textStyle="bold" />
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>

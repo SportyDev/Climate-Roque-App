@@ -49,7 +49,7 @@ class ActivityMonthlyReports : AppCompatActivity() {
     private fun initViews() {
         // Botones del toolbar
         btnClose = findViewById(R.id.btnClose)
-        btnPrevMonth = findViewById(R.id.btnPrevMonth)
+        btnPrevMonth = findViewById(R.id.btnPrevYear)
 
         // CardViews de los meses
         cardEnero = findViewById(R.id.cardEnero)
@@ -185,7 +185,8 @@ class ActivityMonthlyReports : AppCompatActivity() {
 
         // 3. Generar el PDF Real
         val pdfGenerator = ReportePdfGenerator(this)
-        pdfGenerator.generarReporteReal(monthNumber, anio, listaRegistros)
+        //pdfGenerator.generarReporteReal(monthNumber, anio, listaRegistros)
+        pdfGenerator.generarPrueba()
     }
 
     private fun viewMonthData(monthName: String, monthNumber: Int) {
