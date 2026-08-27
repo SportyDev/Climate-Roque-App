@@ -27,7 +27,6 @@ class RegistroClimaActivity : AppCompatActivity() {
     private lateinit var dbHelper: AdminBdClima
     private lateinit var fechaActualParaBD: String
 
-    // VARIABLE NUEVA: Almacena el registro si estamos editando
     var registroEdicion: RegistroClimatico? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -180,7 +179,6 @@ class RegistroClimaActivity : AppCompatActivity() {
     }
 
     // CLASE ADAPTER INTERNA
-    // Modificada para llamar a cargarDatos cuando el fragmento esté listo
     private inner class ClimateFormPagerAdapter(activity: AppCompatActivity) :
         FragmentStateAdapter(activity) {
 
@@ -220,8 +218,6 @@ class RegistroClimaActivity : AppCompatActivity() {
         fun getEstadoHoraFragment() = estadoHoraFragment
         fun getEstado24HFragment() = estado24HFragment
 
-        // Helper para no complicarnos con Bundles serializables,
-        // usaremos un truco en el onResume de los fragments mejor.
         private fun createBundle(reg: RegistroClimatico, type: Int): Bundle {
             return Bundle() // Placeholder
         }

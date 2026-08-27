@@ -22,7 +22,6 @@ class AdminBdClima(private val contexto: Context) :
         // Nombre de la tabla
         const val TABLE_REGISTROS = "RegistrosClimaticos"
 
-        // --- TODAS LAS NUEVAS COLUMNAS ---
         const val COL_ID = "id"
         const val COL_FECHA = "fecha"
 
@@ -71,17 +70,12 @@ class AdminBdClima(private val contexto: Context) :
         }
     }
 
-    /**
-     * Revisa si el archivo de la base de datos ya está en el directorio de la app.
-     */
+
     private fun databaseExists(): Boolean {
         return contexto.getDatabasePath(DATABASE_NAME).exists()
     }
 
-    /**
-     * Copia la base de datos desde la carpeta 'assets' al directorio de la app.
-     * !! IMPORTANTE: Coloca tu "BDClima.db" en la carpeta src/main/assets !!
-     */
+
     private fun copyDatabase() {
         val inputStream = contexto.assets.open(DATABASE_NAME)
         val outputStream = FileOutputStream(dbPath)
@@ -100,11 +94,7 @@ class AdminBdClima(private val contexto: Context) :
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {}
 
 
-    // --- Métodos CRUD (Actualizados a 20 columnas) ---
 
-    /**
-     * Inserta un nuevo registro climático en la base de datos.
-     */
     fun addRegistro(registro: RegistroClimatico): Long {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -140,9 +130,7 @@ class AdminBdClima(private val contexto: Context) :
         return id
     }
 
-    /**
-     * Obtiene un registro específico usando su fecha (que es ÚNICA).
-     */
+
     fun getRegistroByFecha(fecha: String): RegistroClimatico? {
         val db = this.readableDatabase
         val cursor = db.query(
@@ -163,9 +151,7 @@ class AdminBdClima(private val contexto: Context) :
         return registro
     }
 
-    /**
-     * Obtiene todos los registros climáticos ordenados por fecha (más reciente primero).
-     */
+
     fun getAllRegistros(): List<RegistroClimatico> {
         val listaRegistros = mutableListOf<RegistroClimatico>()
         val db = this.readableDatabase
@@ -183,9 +169,6 @@ class AdminBdClima(private val contexto: Context) :
         return listaRegistros
     }
 
-    /**
-     * Actualiza un registro existente basado en su ID.
-     */
     fun updateRegistro(registro: RegistroClimatico): Int {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -241,7 +224,6 @@ class AdminBdClima(private val contexto: Context) :
         return rowsAffected
     }
 
-    // Dentro de AdminBdClima...
 
     fun calcularResumenMensual(mes: Int, anio: Int): ResumenMensualData {
         val data = ResumenMensualData()

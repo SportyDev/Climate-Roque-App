@@ -16,7 +16,7 @@ data class Estado24hData(
     val estadoTiempo24hr: String?,        // Cielo (Despejado, Nublado...)
     val estadoTemperatura24hr: String?,   // Temperatura (Frio, Fresco...)
     val vientoDireccion24hr: String?,     // N, S, E, W
-    val visibilidadPorcentaje24hr: Int?,  // Entero (según tu Base de Datos)
+    val visibilidadPorcentaje24hr: Int?,  // Entero
     val fenomenosDiversos24hr: String?    // Descripción
 )
 
@@ -35,7 +35,7 @@ class Estado24HFragment : Fragment() {
 
     // 3. Viento
     private lateinit var etDireccionViento: EditText
-    private lateinit var etIntensidadViento: EditText // Existe en XML, aunque no en la DataClass principal
+    private lateinit var etIntensidadViento: EditText
 
     // 4. Visibilidad y Fenómenos
     private lateinit var etVisibilidad: EditText
@@ -47,14 +47,12 @@ class Estado24HFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Asegúrate de que el nombre del layout sea el correcto (fragment_estado_24.xml o fragment_estado_24h.xml)
         return inflater.inflate(R.layout.fragment_estado_24h, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // --- Inicializar Vistas (Binding) ---
 
         // Cielo
         cbDespejado = view.findViewById(R.id.cbDespejado24h)
@@ -76,7 +74,6 @@ class Estado24HFragment : Fragment() {
         etFenomenos = view.findViewById(R.id.etFenomenos24h)
     }
 
-    // Agrega esto en Estado24HFragment.kt
     override fun onResume() {
         super.onResume()
         val activity = requireActivity() as? RegistroClimaActivity
@@ -85,14 +82,11 @@ class Estado24HFragment : Fragment() {
         }
     }
 
-    // Función auxiliar para convertir String a Int de forma segura (ej: "10" -> 10, "10.5" -> 10, "" -> null)
     private fun String.toIntOrNullSafe(): Int? {
         return this.trim().toDoubleOrNull()?.toInt()
     }
 
-    /**
-     * Recolecta los datos de este fragmento.
-     */
+
     fun collectData(): Estado24hData {
 
         // A. Lógica para el Cielo (Juntar opciones seleccionadas)
@@ -114,14 +108,11 @@ class Estado24HFragment : Fragment() {
             estadoTiempo24hr = cieloString,
             estadoTemperatura24hr = tempString,
             vientoDireccion24hr = etDireccionViento.text.toString(),
-            // Nota: etIntensidadViento no se guarda porque Estado24hData no tiene campo para ello en tu diseño actual,
-            // pero podrías concatenarlo si quisieras: "${etDireccionViento.text} ${etIntensidadViento.text}"
 
             visibilidadPorcentaje24hr = etVisibilidad.text.toString().toIntOrNullSafe(),
             fenomenosDiversos24hr = etFenomenos.text.toString()
         )
     }
-    // Agrega esto dentro de Estado24HFragment
 
     fun cargarDatos(registro: RegistroClimatico) {
         // 2. VALIDACIÓN

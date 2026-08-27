@@ -80,34 +80,27 @@ class EstadoHoraFragment : Fragment() {
         etFenomenos = view.findViewById(R.id.etFenomenosHora)
     }
 
-    // Agrega esto en TemperaturasFragment.kt
     override fun onResume() {
         super.onResume()
-        // Buscar si la actividad tiene un registro para editar
         val activity = requireActivity() as? RegistroClimaActivity
         activity?.registroEdicion?.let { datos ->
-            cargarDatos(datos) // Llamamos a la función que creamos en el Paso 1
+            cargarDatos(datos)
         }
     }
 
-    // Ayuda a convertir texto a Double sin errores
     private fun String.toDoubleOrNullSafe(): Double? {
         return this.trim().toDoubleOrNull()
     }
 
-    /**
-     * Recolecta los datos de las vistas para enviarlos a la Activity/Base de Datos.
-     */
+
     fun collectData(): EstadoHoraData {
 
-        // A. Lógica para el Cielo (Juntar opciones seleccionadas)
         val cieloList = mutableListOf<String>()
         if (cbDespejado.isChecked) cieloList.add("Despejado")
         if (cbMedioNublado.isChecked) cieloList.add("Medio Nublado")
         if (cbNublado.isChecked) cieloList.add("Nublado")
         val cieloString = cieloList.joinToString(", ")
 
-        // B. Lógica para la Temperatura
         val tempList = mutableListOf<String>()
         if (cbFrio.isChecked) tempList.add("Frío")
         if (cbFresco.isChecked) tempList.add("Fresco")
@@ -115,9 +108,6 @@ class EstadoHoraFragment : Fragment() {
         if (cbCaluroso.isChecked) tempList.add("Caluroso")
         val tempString = tempList.joinToString(", ")
 
-        // C. Lógica para Viento
-        // Si "Calma" está marcado, ignoramos la dirección escrita y ponemos "CALMA" (opcional)
-        // O simplemente guardamos el booleano. Aquí guardamos lo que está escrito.
         val direccion = if (cbCalma.isChecked) "CALMA" else etDireccionViento.text.toString()
 
         return EstadoHoraData(
@@ -130,10 +120,8 @@ class EstadoHoraFragment : Fragment() {
             fenomenos = etFenomenos.text.toString()
         )
     }
-    // Agrega esto dentro de EstadoHoraFragment
 
     fun cargarDatos(registro: RegistroClimatico) {
-        // 2. VALIDACIÓN PARA NO SOBRESCRIBIR
         if (datosCargados) return
 
         // Cargar Cielo
